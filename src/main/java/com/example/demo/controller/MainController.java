@@ -25,4 +25,9 @@ public class MainController {
 		np.setTitle("title");
 		return np.getTitle();
 	}
+
+	@RequestMapping("/ping")
+	public String test() {
+		return "pong!";
+	}
 }
