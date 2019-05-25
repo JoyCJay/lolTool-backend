@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class Summoner {
+	private String id; //encryptedSummonerId
 	private String accountId;
 	private String name;
 	private int summonerLevel;

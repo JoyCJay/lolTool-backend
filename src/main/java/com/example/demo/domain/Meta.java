@@ -12,7 +12,7 @@ public class Meta {
     String gameId;
     // String role;
     String date;
-    String druation;
+    String duration;
     String winTeam;
 
     public Meta(JSONObject match){

@@ -51,7 +51,7 @@ public class SummonerServiceImpl implements SummonerService {
             JSONObject raw = this.getRawMatch(meta.getGameId());
             game.setBluePlayers(getbluePlayers(raw)); // 100
             game.setRedPlayers(getRedPlayers(raw)); // 200
-            game.getMeta().setDruation(raw.getIntValue("gameDuration")/60+" mins");
+            game.getMeta().setDuration(raw.getIntValue("gameDuration")/60+" mins");
             game.getMeta().setWinTeam(winTeam(raw));;
             matchList.add(game);
         }
