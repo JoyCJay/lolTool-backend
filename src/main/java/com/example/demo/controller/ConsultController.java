@@ -5,13 +5,16 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import com.alibaba.fastjson.JSON;
-import com.example.demo.domain.KdaChartData;
 import com.example.demo.domain.Match;
 import com.example.demo.domain.Summoner;
+import com.example.demo.domain.chartData.ChartData;
+import com.example.demo.domain.chartData.DamageChartData;
 import com.example.demo.service.ChartService;
 import com.example.demo.service.SummonerService;
 
+import com.example.demo.service.impl.ChartServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -24,18 +27,18 @@ import org.springframework.web.bind.annotation.*;
 public class ConsultController {
 
 	private SummonerService summonerService;
-	private ChartService chartService;
+	private ChartServiceImpl chartService;
 
 	@Autowired
-	ConsultController(SummonerService summonerService) {
-		this.summonerService = summonerService;
+	ConsultController(SummonerService summonerService, ChartServiceImpl chartService) {
+	    this.summonerService = summonerService;
+	    this.chartService = chartService;
 	}
 
 	@GetMapping("/getSummoner")
-	public Summoner getSummoner(@RequestParam String summonerName) throws IOException {
+	public String getSummoner(@RequestParam String summonerName) throws IOException {
 		Summoner summoner = this.summonerService.getSummonerByName(summonerName);
-//		return JSON.toJSONString(summoner);
-        return summoner;
+		return JSON.toJSONString(summoner);
 	}
 
 	@GetMapping("/getMatches")
@@ -43,8 +46,13 @@ public class ConsultController {
 		return summonerService.get5Games(accountId,index);
 	}
 
-    @GetMapping("/getEChartsData")
-    public KdaChartData getDamageChart(@RequestParam String type, @RequestParam Match match) throws IOException {
-	    return (KdaChartData) chartService.getKdaChartData(match);
+    @GetMapping(value = "/getEChartsData", produces = MediaType.APPLICATION_JSON_VALUE)
+    public DamageChartData getDamageChartJson(@RequestParam String type) throws IOException {
+	    return chartService.getDamageChartData();
+    }
+
+    @GetMapping(value = "/getEChartsData", produces = MediaType.APPLICATION_XML_VALUE)
+    public DamageChartData getDamageChartXml(@RequestParam String type) throws IOException {
+        return chartService.getDamageChartData();
     }
 }

@@ -1,13 +1,14 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.domain.KdaChartData;
+import com.example.demo.domain.chartData.DamageChartData;
+import com.example.demo.domain.chartData.DamageData;
+import com.example.demo.domain.chartData.KdaChartData;
 import com.example.demo.domain.Match;
 import com.example.demo.domain.Player;
 import com.example.demo.service.ChartService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -39,6 +40,27 @@ public class ChartServiceImpl implements ChartService {
         kdaChartData.getBlueTeam().put("name", bluePlayersName);
 
         return kdaChartData;
+    }
+
+    @Override
+    public DamageChartData getDamageChartData() {
+
+        ArrayList<DamageData> blueTeam = new ArrayList<>();
+        blueTeam.add(new DamageData(24370, "Valeera SQ"));
+        blueTeam.add(new DamageData(16215, "fanyizhe"));
+        blueTeam.add(new DamageData(18953, "JoyCJay"));
+        blueTeam.add(new DamageData(35284, "Tonyilian"));
+        blueTeam.add(new DamageData(22833, "Diane katy"));
+
+        ArrayList<DamageData> redTeam = new ArrayList<>();
+        redTeam.add(new DamageData(24914, "Tavile T1 CuBe"));
+        redTeam.add(new DamageData(31770, "FluffyMasterlein"));
+        redTeam.add(new DamageData(12282, "iMe Shamy"));
+        redTeam.add(new DamageData(35357, "Gintoki6sama"));
+        redTeam.add(new DamageData(21590, "SoA Bane"));
+
+        return new DamageChartData(blueTeam, redTeam);
+
     }
 
 }

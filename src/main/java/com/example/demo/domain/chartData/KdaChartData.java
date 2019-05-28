@@ -1,9 +1,9 @@
-package com.example.demo.domain;
+package com.example.demo.domain.chartData;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class KdaChartData {
+public class KdaChartData extends ChartData {
     HashMap<String, List<Object>> blueTeam = new HashMap<>();
     HashMap<String, List<Object>> redTeam = new HashMap<>();
 
