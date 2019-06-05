@@ -100,6 +100,9 @@ public class SummonerServiceImpl implements SummonerService {
         return  getAPI("https://euw1.api.riotgames.com/lol/match/v4/matches/"+gameId);
     }
 
+    // timeout
+    // restart if error
+    // value boundary condition
     public JSONObject getAPI(String URL) throws IOException{
         URL url = new URL(URL);
         connection = (HttpURLConnection)url.openConnection();

@@ -25,7 +25,7 @@ public class Player {
         this.setTotalMinionsKilled(stats.getIntValue("totalMinionsKilled"));
         this.setTurretKills(stats.getIntValue("turretKills"));
         this.setGold(stats.getIntValue("goldSpent"));
-        this.setDmg(stats.getIntValue("totalDamageDealt"));
+        this.setDmg(stats.getIntValue("totalDamageDealtToChampions"));//totalDamageDealt
         this.setDmgTaken(stats.getIntValue("totalDamageTaken"));
         this.setVisionScore(stats.getIntValue("visionScore"));
 	}

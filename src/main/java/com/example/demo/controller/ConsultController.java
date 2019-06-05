@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import com.alibaba.fastjson.JSON;
 import com.example.demo.domain.Match;
 import com.example.demo.domain.Summoner;
-import com.example.demo.domain.chartData.ChartData;
 import com.example.demo.domain.chartData.DamageChartData;
-import com.example.demo.service.ChartService;
 import com.example.demo.service.SummonerService;
 
 import com.example.demo.service.impl.ChartServiceImpl;
