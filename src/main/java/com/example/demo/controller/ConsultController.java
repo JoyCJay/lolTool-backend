@@ -33,15 +33,17 @@ public class ConsultController {
 	    this.chartService = chartService;
 	}
 
-	@GetMapping("/getSummoner")
-	public String getSummoner(@RequestParam String summonerName) throws IOException {
+	//GET /consult/summoner/by-name/{summonerName}
+	@GetMapping("/summoner/by-name/{summonerName}")
+	public String getSummoner(@PathVariable String summonerName) throws IOException {
 		Summoner summoner = this.summonerService.getSummonerByName(summonerName);
 		return JSON.toJSONString(summoner);
 	}
 
-	@GetMapping("/getMatches")
-	public ArrayList<Match> getMatches(@RequestParam String accountId, @RequestParam int index) throws MalformedURLException, IOException {
-		return summonerService.get5Games(accountId,index);
+	///consult/matches/{accountId}/{index}
+	@GetMapping("/matches/{accountId}/{index}")
+	public ArrayList<Match> getMatches(@PathVariable String accountId, @PathVariable int index) throws MalformedURLException, IOException {
+		return summonerService.get5Games(accountId, index);
 	}
 
     @GetMapping(value = "/getEChartsData", produces = MediaType.APPLICATION_JSON_VALUE)
