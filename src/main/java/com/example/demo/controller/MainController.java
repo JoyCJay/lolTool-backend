@@ -16,10 +16,10 @@ public class MainController {
 	@Autowired
 	DemoService demoService;
 	
-	@RequestMapping("/getDemo")
-	public List<DemoTable1Entity> getAllDemoTable1Entity() {
-		return demoService.getAllDemoTable1Entity();
-	}
+//	@RequestMapping("/getDemo")
+//	public List<OnlineControlDto> getAllDemoTable1Entity() {
+//		return demoService.getOnlineControl();
+//	}
 	
 	@RequestMapping("/getProp")
 	public String getProp() {

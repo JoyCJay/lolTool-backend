@@ -1,27 +1,39 @@
 package com.example.demo.domain;
 
 public class DemoTable1Entity {
-	private int demoId;
-	private String name;
+	private String email;
+	private String summonerName;
+	private String timeInterval;
 	
 	public DemoTable1Entity() {
 		
 	}
-	
-	public int getDemoId() {
-		return demoId;
+
+	public String getEmail() {
+		return email;
 	}
-	public void setDemoId(int demoId) {
-		this.demoId = demoId;
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
-	public String getName() {
-		return name;
+
+	public String getSummonerName() {
+		return summonerName;
 	}
-	public void setName(String name) {
-		this.name = name;
+
+	public void setSummonerName(String summonerName) {
+		this.summonerName = summonerName;
 	}
-	
+
+	public String getTimeInterval() {
+		return timeInterval;
+	}
+
+	public void setTimeInterval(String timeInterval) {
+		this.timeInterval = timeInterval;
+	}
+
 	public String toString() {
-		return "demoId=" + demoId + "," + "name=" + name;
+		return "demoId=" + email + "," + "name=" + summonerName;
 	}
 }

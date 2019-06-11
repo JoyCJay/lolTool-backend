@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.demo.mapper.DemoMapper">
-    <select id="selectAllDemoTable1Entity" resultType="com.example.demo.domain.DemoTable1Entity">
-    	select * from table1
+    <select id="getOnlineControl" resultType="com.example.demo.domain.OnlineControlDto">
+    	select * from t_online_control
     </select>
+
+    <insert id="addOnlineControl" parameterType="com.example.demo.domain.OnlineControlDto">
+        insert into t_online_control (email, summonerName, timeInterval)
+        values (#{email,jdbcType=VARCHAR}, #{summonerName,jdbcType=VARCHAR},
+        #{timeInterval,jdbcType=VARCHAR})
+    </insert>
 </mapper>

@@ -1,6 +1,9 @@
 package com.example.demo.mapper;
 
 import java.util.List;
+
+import com.example.demo.domain.OnlineControlDto;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.domain.DemoTable1Entity;
@@ -8,7 +11,9 @@ import com.example.demo.domain.DemoTable1Entity;
 @Repository
 public interface DemoMapper {
 	
-	List<DemoTable1Entity> selectAllDemoTable1Entity();
+	List<OnlineControlDto> getOnlineControl();
+
+	void addOnlineControl(OnlineControlDto OCinformation);
 	 
 //    public Long insertArticle(Article article);
 // 

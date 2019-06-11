@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.domain.OnlineControlDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,11 @@ public class DemoService {
 	@Autowired
 	DemoMapper mapper;
 	
-	public List<DemoTable1Entity> getAllDemoTable1Entity() {
-		return mapper.selectAllDemoTable1Entity();
+	public List<OnlineControlDto> getOnlineControl() {
+		return mapper.getOnlineControl();
 	}
+
+	public void addOnlineControl(OnlineControlDto OCinformation) {
+	    mapper.addOnlineControl(OCinformation);
+    }
 }
