@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.util.List;
 
 import com.example.demo.domain.OnlineControlDto;
+import com.example.demo.model.MatchInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,4 +22,8 @@ public class DemoService {
 	public void addOnlineControl(OnlineControlDto OCinformation) {
 	    mapper.addOnlineControl(OCinformation);
     }
+
+    public List<MatchInfo> getMatchInfo(){
+		return mapper.getMatchInfo();
+	}
 }

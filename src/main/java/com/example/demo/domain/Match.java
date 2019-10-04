@@ -1,6 +1,7 @@
 package com.example.demo.domain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Data;
 
@@ -13,6 +14,6 @@ public class Match {
         this.Meta = meta2;
 	}
 	Meta Meta;
-    ArrayList<Player>  bluePlayers;
-    ArrayList<Player>  redPlayers;
+    List<Player> bluePlayers;
+    List<Player> redPlayers;
 }

@@ -6,17 +6,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class DamageData {
 
-    private int value;
+    private int dmg;
     private String name;
 
-    public DamageData(int value, String name) {
-        this.value = value;
+    public DamageData(int dmg, String name) {
+        this.dmg = dmg;
         this.name = name;
     }
 
     @XmlElement
-    public int getValue() {
-        return value;
+    public int getDmg() {
+        return dmg;
     }
 
     @XmlElement

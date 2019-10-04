@@ -2,15 +2,14 @@ package com.example.demo.controller;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
+import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 import com.example.demo.domain.Match;
 import com.example.demo.domain.Summoner;
-import com.example.demo.domain.chartData.DamageChartData;
+import com.example.demo.service.ChartService;
 import com.example.demo.service.SummonerService;
 
-import com.example.demo.service.impl.ChartServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +24,10 @@ import org.springframework.web.bind.annotation.*;
 public class ConsultController {
 
 	private SummonerService summonerService;
-	private ChartServiceImpl chartService;
+	private ChartService chartService;
 
 	@Autowired
-	ConsultController(SummonerService summonerService, ChartServiceImpl chartService) {
+	ConsultController(SummonerService summonerService, ChartService chartService) {
 	    this.summonerService = summonerService;
 	    this.chartService = chartService;
 	}
@@ -42,17 +41,17 @@ public class ConsultController {
 
 	///consult/matches/{accountId}/{index}
 	@GetMapping("/matches/{accountId}/{index}")
-	public ArrayList<Match> getMatches(@PathVariable String accountId, @PathVariable int index) throws MalformedURLException, IOException {
+	public List<Match> getMatches(@PathVariable String accountId, @PathVariable int index) throws MalformedURLException, IOException {
 		return summonerService.get5Games(accountId, index);
 	}
 
-    @GetMapping(value = "/getEChartsData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public DamageChartData getDamageChartJson(@RequestParam String type) throws IOException {
-	    return chartService.getDamageChartData();
+    @GetMapping(value = "/chartsData/damage", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Object getDamageChartJson() throws IOException {
+	    return chartService.getDmgChartData();
     }
 
-    @GetMapping(value = "/getEChartsData", produces = MediaType.APPLICATION_XML_VALUE)
-    public DamageChartData getDamageChartXml(@RequestParam String type) throws IOException {
-        return chartService.getDamageChartData();
-    }
+//    @GetMapping(value = "/chartsData/damage/{matchId}", produces = MediaType.APPLICATION_XML_VALUE)
+//    public Object getDamageChartXml() throws IOException {
+//        return chartService.getDmgChartData();
+//    }
 }

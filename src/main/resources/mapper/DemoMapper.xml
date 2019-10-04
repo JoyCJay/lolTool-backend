@@ -10,4 +10,8 @@
         values (#{email,jdbcType=VARCHAR}, #{summonerName,jdbcType=VARCHAR},
         #{timeInterval,jdbcType=VARCHAR})
     </insert>
+
+    <select id="getMatchInfo" resultType="com.example.demo.model.MatchInfo">
+        select * from match_info where match_id=1
+    </select>
 </mapper>

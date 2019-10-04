@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -32,15 +33,14 @@ public class SummonerServiceImpl implements SummonerService {
     @Override
     public Summoner getSummonerByName(String name) throws IOException {
         JSONObject rawSummoner = getAPI("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + name);
-        Summoner summoner = JSON.parseObject(rawSummoner.toString(), Summoner.class);
-        return summoner;
+        return JSON.parseObject(rawSummoner.toString(), Summoner.class);
     }
 
     @Override
-    public ArrayList<Match> get5Games(String accoutId, int index) throws IOException {
+    public List<Match> get5Games(String accoutId, int index) throws IOException {
         JSONObject rawMatchLists = getAPI("https://euw1.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accoutId
         + "?endIndex=" + 5 * index + "&beginIndex=" + (5 * index - 5));
-        ArrayList<Match> matchList = new ArrayList<Match>();
+        List<Match> matchList = new ArrayList<>();
         JSONArray matchesMeta = rawMatchLists.getJSONArray("matches");
         for (Object matchMeta : matchesMeta) {
             JSONObject matchMetaJSON = JSON.parseObject(matchMeta.toString());

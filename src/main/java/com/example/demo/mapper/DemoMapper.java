@@ -3,6 +3,7 @@ package com.example.demo.mapper;
 import java.util.List;
 
 import com.example.demo.domain.OnlineControlDto;
+import com.example.demo.model.MatchInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +15,8 @@ public interface DemoMapper {
 	List<OnlineControlDto> getOnlineControl();
 
 	void addOnlineControl(OnlineControlDto OCinformation);
-	 
+
+	List<MatchInfo> getMatchInfo();
 //    public Long insertArticle(Article article);
 // 
 //    public void updateArticle(Article article);
