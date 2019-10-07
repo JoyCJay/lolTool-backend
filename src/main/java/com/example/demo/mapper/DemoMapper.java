@@ -3,11 +3,8 @@ package com.example.demo.mapper;
 import java.util.List;
 
 import com.example.demo.domain.OnlineControlDto;
-import com.example.demo.model.MatchInfo;
-import org.apache.ibatis.annotations.Param;
+import com.example.demo.entity.Match;
 import org.springframework.stereotype.Repository;
-
-import com.example.demo.domain.DemoTable1Entity;
 
 @Repository
 public interface DemoMapper {
@@ -16,7 +13,7 @@ public interface DemoMapper {
 
 	void addOnlineControl(OnlineControlDto OCinformation);
 
-	List<MatchInfo> getMatchInfo();
+	List<Match> getMatchInfo(String match_id);
 //    public Long insertArticle(Article article);
 // 
 //    public void updateArticle(Article article);

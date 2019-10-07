@@ -3,11 +3,10 @@ package com.example.demo.service;
 import java.util.List;
 
 import com.example.demo.domain.OnlineControlDto;
-import com.example.demo.model.MatchInfo;
+import com.example.demo.entity.Match;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.domain.DemoTable1Entity;
 import com.example.demo.mapper.DemoMapper;
 
 @Service
@@ -23,7 +22,7 @@ public class DemoService {
 	    mapper.addOnlineControl(OCinformation);
     }
 
-    public List<MatchInfo> getMatchInfo(){
-		return mapper.getMatchInfo();
+    public List<Match> getMatchInfo(String match_id){
+		return mapper.getMatchInfo(match_id);
 	}
 }

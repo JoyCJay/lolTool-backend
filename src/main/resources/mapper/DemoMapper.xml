@@ -11,7 +11,7 @@
         #{timeInterval,jdbcType=VARCHAR})
     </insert>
 
-    <select id="getMatchInfo" resultType="com.example.demo.model.MatchInfo">
-        select * from match_info where match_id=1
+    <select id="getMatchInfo" resultType="com.example.demo.entity.Match">
+        select * from match where match_id=1
     </select>
 </mapper>

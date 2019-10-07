@@ -45,9 +45,9 @@ public class ConsultController {
 		return summonerService.get5Games(accountId, index);
 	}
 
-    @GetMapping(value = "/chartsData/damage", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object getDamageChartJson() throws IOException {
-	    return chartService.getDmgChartData();
+    @GetMapping(value = "/chartsData/damage/{match_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Object getDamageChartJson(@PathVariable Long match_id) throws IOException {
+	    return chartService.getSingleMatchChartData(match_id);
     }
 
 //    @GetMapping(value = "/chartsData/damage/{matchId}", produces = MediaType.APPLICATION_XML_VALUE)

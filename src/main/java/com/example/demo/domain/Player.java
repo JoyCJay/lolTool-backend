@@ -29,9 +29,8 @@ public class Player {
         this.setDmgTaken(stats.getIntValue("totalDamageTaken"));
         this.setVisionScore(stats.getIntValue("visionScore"));
 	}
-	String  summonerName;
+	String summonerName;
     String accountId;
-
     String lane;
     String champion;
     int[] spells;
