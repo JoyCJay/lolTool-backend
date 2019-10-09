@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MatchDao extends JpaRepository<Match, Long> {
+public interface MatchInfoDao extends JpaRepository<Match, Long> {
 
-    @Query("from Match m where m.match_id=?1")
-    List<Match> findMatchByMatch_id(Long match_id);
+    @Query("from Match m where m.matchId=?1")
+    List<Match> findMatchByMatchId(Long match_id);
 }

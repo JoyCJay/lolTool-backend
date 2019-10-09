@@ -11,15 +11,21 @@ public class SingleMatchData {
 
     private String name;
     private int dmg;
-    private String kda;
+    private int kill;
+    private int death;
+    private int assist;
+    private int gold;
 
-    public SingleMatchData(String name, int dmg, String kda) {
-        this.dmg = dmg;
+    public SingleMatchData(String name, int dmg, int kill, int death, int assist, int gold) {
         this.name = name;
-        this.kda = kda;
+        this.dmg = dmg;
+        this.kill = kill;
+        this.death = death;
+        this.assist = assist;
+        this.gold = gold;
     }
 
-//    @XmlElement
+    //    @XmlElement
 //    public int getDmg() {
 //        return dmg;
 //    }

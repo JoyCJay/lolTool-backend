@@ -2,10 +2,8 @@ package com.example.demo.entity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @Entity
@@ -13,6 +11,7 @@ import javax.persistence.Table;
 public class SummonerInfo {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "account_id", nullable = false)
     private String accountId;
@@ -21,6 +20,6 @@ public class SummonerInfo {
     @Column(name = "summoner_level")
     private int summonerLevel;
     @Column(name = "revision_date")
-    private Long revisionDate;
+    private Date revisionDate;
 
 }

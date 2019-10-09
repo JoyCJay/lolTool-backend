@@ -5,14 +5,14 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 import com.example.demo.domain.Match;
-import com.example.demo.domain.Summoner;
+import com.example.demo.dto.SummonerInfoRespDto;
 
 /**
  * summonerService
  */
 public interface SummonerService {
 
-    Summoner getSummonerByName(String name) throws MalformedURLException, IOException;
+    SummonerInfoRespDto getSummonerByName(String name);
 
     List<Match> get5Games(String accountId, int index) throws MalformedURLException, IOException;
 }

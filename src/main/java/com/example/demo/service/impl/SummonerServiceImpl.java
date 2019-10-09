@@ -11,12 +11,17 @@ import java.util.List;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.demo.dao.SummonerInfoDao;
 import com.example.demo.domain.Summoner;
 import com.example.demo.domain.Match;
 import com.example.demo.domain.Meta;
 import com.example.demo.domain.Player;
+import com.example.demo.dto.SummonerInfoRespDto;
+import com.example.demo.entity.SummonerInfo;
 import com.example.demo.service.SummonerService;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +35,42 @@ public class SummonerServiceImpl implements SummonerService {
     @Value("${api-token}")
     private String APIToken;
 
+    @Autowired
+    private SummonerInfoDao summonerInfoDao;
+
     @Override
-    public Summoner getSummonerByName(String name) throws IOException {
-        JSONObject rawSummoner = getAPI("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + name);
-        return JSON.parseObject(rawSummoner.toString(), Summoner.class);
+    public SummonerInfoRespDto getSummonerByName(String summonerName) {
+        SummonerInfo summonerInfo = summonerInfoDao.findSummonerByName(summonerName);
+        SummonerInfoRespDto summonerInfoRespDto = new SummonerInfoRespDto();
+        if(summonerInfo != null){
+            BeanUtils.copyProperties(summonerInfo, summonerInfoRespDto);
+            System.out.println("aaaaaa");
+        }else{
+            JSONObject rawSummoner = null;
+            try {
+                rawSummoner = getAPI("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("bbbbbb");
+            summonerInfoRespDto.setAccountId(rawSummoner.getString("accountId"));
+            summonerInfoRespDto.setSummonerName(rawSummoner.getString("name"));
+            summonerInfoRespDto.setSummonerLevel(rawSummoner.getIntValue("summonerLevel"));
+            summonerInfoRespDto.setRevisionDate(rawSummoner.getTimestamp("revisionDate"));
+            BeanUtils.copyProperties(rawSummoner, summonerInfoRespDto);
+
+            //insert into database, table summoner_info
+            putSummonerInfo(new SummonerInfo(), rawSummoner);
+        }
+        return summonerInfoRespDto;
+    }
+
+    private void putSummonerInfo(SummonerInfo summonerInfo, JSONObject rawSummoner) {
+        summonerInfo.setAccountId(rawSummoner.getString("accountId"));
+        summonerInfo.setSummonerName(rawSummoner.getString("name"));
+        summonerInfo.setSummonerLevel(rawSummoner.getIntValue("summonerLevel"));
+        summonerInfo.setRevisionDate(rawSummoner.getTimestamp("revisionDate"));
+        summonerInfoDao.save(summonerInfo);
     }
 
     @Override
@@ -103,7 +140,7 @@ public class SummonerServiceImpl implements SummonerService {
     // timeout
     // restart if error
     // value boundary condition
-    public JSONObject getAPI(String URL) throws IOException{
+    private JSONObject getAPI(String URL) throws IOException{
         URL url = new URL(URL);
         connection = (HttpURLConnection)url.openConnection();
         connection.setRequestMethod("GET");
@@ -112,7 +149,7 @@ public class SummonerServiceImpl implements SummonerService {
         // response
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
-        StringBuffer content = new StringBuffer();
+        StringBuilder content = new StringBuilder();
         while ((inputLine = in.readLine()) != null) {
             content.append(inputLine);
         }

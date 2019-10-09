@@ -1,12 +1,11 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dao.MatchDao;
+import com.example.demo.dao.MatchInfoDao;
 import com.example.demo.domain.chartData.SingleMatchData;
 import com.example.demo.domain.Player;
 import com.example.demo.dto.SingleMatchChartDataDto;
 import com.example.demo.entity.Match;
 import com.example.demo.service.ChartService;
-import com.example.demo.service.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,7 @@ import java.util.List;
 public class ChartServiceImpl implements ChartService {
 
     @Autowired
-    private MatchDao matchDao;
+    private MatchInfoDao matchInfoDao;
 
 //    @Override
 //    public KdaChartData getKdaChartData(Long match_id) {
@@ -53,12 +52,23 @@ public class ChartServiceImpl implements ChartService {
     @Override
     public SingleMatchChartDataDto getSingleMatchChartData(Long match_id) {
 
-        List<Match> matchList = matchDao.findMatchByMatch_id(match_id);
+        List<Match> matchList = matchInfoDao.findMatchByMatchId(match_id);
+
+        int kill = 0;
+        int death = 0;
+        int assist = 0;
+        for(Match m : matchList){
+            String kda = m.getKda();
+            String[] arr = kda.split("/");
+            kill = Integer.parseInt(arr[0]);
+            death = Integer.parseInt(arr[1]);
+            assist = Integer.parseInt(arr[2]);
+        }
 
         List<SingleMatchData> blueTeam = new ArrayList<>();
         for(Match m : matchList){
             if(m.getTeam().equals("blue")){
-                blueTeam.add(new SingleMatchData(m.getSummoner_name(), m.getDmg(), m.getKda()));
+                blueTeam.add(new SingleMatchData(m.getSummonerName(), m.getDmg(), kill, death, assist, m.getGold()));
             }
         }
 //        blueTeam.add(new DamageData(24370, "Valeera SQ"));
@@ -70,7 +80,7 @@ public class ChartServiceImpl implements ChartService {
         List<SingleMatchData> redTeam = new ArrayList<>();
         for(Match m : matchList){
             if(m.getTeam().equals("red")){
-                redTeam.add(new SingleMatchData(m.getSummoner_name(), m.getDmg(), m.getKda()));
+                redTeam.add(new SingleMatchData(m.getSummonerName(), m.getDmg(), kill, death, assist, m.getGold()));
             }
         }
 //        redTeam.add(new DamageData(24914, "Tavile T1 CuBe"));
@@ -80,7 +90,6 @@ public class ChartServiceImpl implements ChartService {
 //        redTeam.add(new DamageData(21590, "SoA Bane"));
 
         return new SingleMatchChartDataDto(blueTeam, redTeam);
-
     }
 
 }

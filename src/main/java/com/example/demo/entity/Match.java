@@ -12,11 +12,11 @@ public class Match {
     @Column(name = "id", nullable = false)
     private Long id;
     @Column(name = "account_id", nullable = false)
-    private String account_id;
+    private String accountId;
     @Column(name = "match_id", nullable = false)
-    private Long match_id;
+    private Long matchId;
     @Column(name = "summoner_name", nullable = false)
-    private String summoner_name;
+    private String summonerName;
     @Column(name = "team", nullable = false)
     private String team;
     @Column(name = "champion")

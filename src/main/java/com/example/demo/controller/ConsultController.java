@@ -32,26 +32,23 @@ public class ConsultController {
 	    this.chartService = chartService;
 	}
 
-	//GET /consult/summoner/by-name/{summonerName}
-	@GetMapping("/summoner/by-name/{summonerName}")
-	public String getSummoner(@PathVariable String summonerName) throws IOException {
-		Summoner summoner = this.summonerService.getSummonerByName(summonerName);
-		return JSON.toJSONString(summoner);
+	@GetMapping(value = "/summonerInfo/{summonerName}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Object getSummonerInfo(@PathVariable String summonerName) {
+		return summonerService.getSummonerByName(summonerName);
 	}
 
-	///consult/matches/{accountId}/{index}
 	@GetMapping("/matches/{accountId}/{index}")
 	public List<Match> getMatches(@PathVariable String accountId, @PathVariable int index) throws MalformedURLException, IOException {
 		return summonerService.get5Games(accountId, index);
 	}
 
-    @GetMapping(value = "/chartsData/damage/{match_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object getDamageChartJson(@PathVariable Long match_id) throws IOException {
+    @GetMapping(value = "/singleMatchChartsData/{match_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Object getDamageChartJson(@PathVariable Long match_id) {
 	    return chartService.getSingleMatchChartData(match_id);
     }
 
 //    @GetMapping(value = "/chartsData/damage/{matchId}", produces = MediaType.APPLICATION_XML_VALUE)
-//    public Object getDamageChartXml() throws IOException {
+//    public Object getDamageChartXml() {
 //        return chartService.getDmgChartData();
 //    }
 }
