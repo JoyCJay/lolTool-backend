@@ -37,9 +37,9 @@ public class ConsultController {
 		return summonerService.getSummonerByName(summonerName);
 	}
 
-	@GetMapping("/matches/{accountId}/{index}")
-	public List<Match> getMatches(@PathVariable String accountId, @PathVariable int index) throws MalformedURLException, IOException {
-		return summonerService.get5Games(accountId, index);
+	@GetMapping(value = "/matches/{accountId}/{index}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Object getMatches(@PathVariable String accountId, @PathVariable int index) throws MalformedURLException, IOException {
+		return summonerService.getMathes(accountId, index);
 	}
 
     @GetMapping(value = "/singleMatchChartsData/{match_id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -10,9 +10,6 @@ import java.util.Date;
 @Table(name = "summoner_info")
 public class SummonerInfo {
     @Id
-    @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     @Column(name = "account_id", nullable = false)
     private String accountId;
     @Column(name = "summoner_name", nullable = false)

@@ -11,12 +11,15 @@ import java.util.List;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.demo.dao.MatchMetaDao;
 import com.example.demo.dao.SummonerInfoDao;
 import com.example.demo.domain.Summoner;
 import com.example.demo.domain.Match;
 import com.example.demo.domain.Meta;
 import com.example.demo.domain.Player;
+import com.example.demo.dto.MatchDto;
 import com.example.demo.dto.SummonerInfoRespDto;
+import com.example.demo.entity.MatchMeta;
 import com.example.demo.entity.SummonerInfo;
 import com.example.demo.service.SummonerService;
 
@@ -31,34 +34,38 @@ import org.springframework.stereotype.Service;
 @Service
 public class SummonerServiceImpl implements SummonerService {
 
-    HttpURLConnection connection;
     @Value("${api-token}")
     private String APIToken;
 
     @Autowired
     private SummonerInfoDao summonerInfoDao;
+    @Autowired
+    private MatchMetaDao matchMetaDao;
 
     @Override
     public SummonerInfoRespDto getSummonerByName(String summonerName) {
+        //find summonerInfo from database firstly
         SummonerInfo summonerInfo = summonerInfoDao.findSummonerByName(summonerName);
         SummonerInfoRespDto summonerInfoRespDto = new SummonerInfoRespDto();
+        //if summonerInfo exists in database
         if(summonerInfo != null){
             BeanUtils.copyProperties(summonerInfo, summonerInfoRespDto);
-            System.out.println("aaaaaa");
-        }else{
+        }
+        //if not
+        else{
             JSONObject rawSummoner = null;
             try {
                 rawSummoner = getAPI("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("bbbbbb");
-            summonerInfoRespDto.setAccountId(rawSummoner.getString("accountId"));
-            summonerInfoRespDto.setSummonerName(rawSummoner.getString("name"));
-            summonerInfoRespDto.setSummonerLevel(rawSummoner.getIntValue("summonerLevel"));
-            summonerInfoRespDto.setRevisionDate(rawSummoner.getTimestamp("revisionDate"));
-            BeanUtils.copyProperties(rawSummoner, summonerInfoRespDto);
-
+            if (rawSummoner != null) {
+                summonerInfoRespDto.setAccountId(rawSummoner.getString("accountId"));
+                summonerInfoRespDto.setSummonerName(rawSummoner.getString("name"));
+                summonerInfoRespDto.setSummonerLevel(rawSummoner.getIntValue("summonerLevel"));
+                summonerInfoRespDto.setRevisionDate(rawSummoner.getTimestamp("revisionDate"));
+                BeanUtils.copyProperties(rawSummoner, summonerInfoRespDto);
+            }
             //insert into database, table summoner_info
             putSummonerInfo(new SummonerInfo(), rawSummoner);
         }
@@ -74,25 +81,48 @@ public class SummonerServiceImpl implements SummonerService {
     }
 
     @Override
-    public List<Match> get5Games(String accoutId, int index) throws IOException {
+    public List<MatchDto> getMathes(String accoutId, int index) throws IOException{
+
         JSONObject rawMatchLists = getAPI("https://euw1.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accoutId
         + "?endIndex=" + 5 * index + "&beginIndex=" + (5 * index - 5));
-        List<Match> matchList = new ArrayList<>();
+
+        List<MatchDto> matchList = new ArrayList<>();
         JSONArray matchesMeta = rawMatchLists.getJSONArray("matches");
+
         for (Object matchMeta : matchesMeta) {
             JSONObject matchMetaJSON = JSON.parseObject(matchMeta.toString());
-            Meta meta = new Meta(matchMetaJSON);
+            System.out.println(matchMetaJSON);
+            Meta meta = new Meta(matchMetaJSON, accoutId);
 
-            // build Match
-            Match game = new Match(meta);
-            JSONObject raw = this.getRawMatch(meta.getGameId());
-            game.setBluePlayers(getbluePlayers(raw)); // 100
-            game.setRedPlayers(getRedPlayers(raw)); // 200
-            game.getMeta().setDuration(raw.getIntValue("gameDuration")/60+" mins");
-            game.getMeta().setWinTeam(winTeam(raw));;
-            matchList.add(game);
+            putMatchMeta(new MatchMeta(), meta);
+
+//            // build Match
+//            MatchDto matchDto = new MatchDto(meta);
+//            //info of a single match
+//            JSONObject raw = getAPI("https://euw1.api.riotgames.com/lol/match/v4/matches/"+meta.getGameId());
+//
+//            matchDto.setBluePlayers(getbluePlayers(raw)); // 100
+//            matchDto.setRedPlayers(getRedPlayers(raw)); // 200
+//            matchDto.getMeta().setDuration(raw.getIntValue("gameDuration")/60+" mins");
+//            matchDto.getMeta().setWinTeam(winTeam(raw));;
+//            matchList.add(matchDto);
         }
         return matchList;
+    }
+
+    private void scheduledTasks(){
+
+    }
+
+    private void putMatchMeta(MatchMeta matchMeta, Meta meta){
+//        BeanUtils.copyProperties(matchMeta, meta);
+        matchMeta.setGameId(meta.getGameId());
+        matchMeta.setDate(meta.getDate());
+        matchMeta.setDuration(meta.getDuration());
+        matchMeta.setWinTeam(meta.getWinTeam());
+        matchMeta.setChampion(meta.getChampion());
+        matchMeta.setAccountId(meta.getAccountId());
+        matchMetaDao.save(matchMeta);
     }
 
     private String winTeam(JSONObject raw) {
@@ -120,7 +150,7 @@ public class SummonerServiceImpl implements SummonerService {
         return bluePlayers;
     }
 
-    public ArrayList<Player> getRedPlayers(JSONObject raw) {
+    private ArrayList<Player> getRedPlayers(JSONObject raw) {
         ArrayList<Player> redPlayers = new ArrayList<>();
         JSONArray participantIdentities = raw.getJSONArray("participantIdentities");
         JSONArray participants = raw.getJSONArray("participants");
@@ -133,16 +163,16 @@ public class SummonerServiceImpl implements SummonerService {
         return redPlayers;
     }
 
-    public JSONObject getRawMatch(String gameId) throws IOException {
-        return  getAPI("https://euw1.api.riotgames.com/lol/match/v4/matches/"+gameId);
-    }
+//    private JSONObject getRawMatch(String gameId) throws IOException {
+//        return  getAPI("https://euw1.api.riotgames.com/lol/match/v4/matches/"+gameId);
+//    }
 
     // timeout
     // restart if error
     // value boundary condition
     private JSONObject getAPI(String URL) throws IOException{
         URL url = new URL(URL);
-        connection = (HttpURLConnection)url.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         connection.setRequestProperty("X-Riot-Token", this.APIToken);
         connection.setRequestProperty("Accept", "application/json");
