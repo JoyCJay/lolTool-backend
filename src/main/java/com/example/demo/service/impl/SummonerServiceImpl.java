@@ -11,14 +11,17 @@ import java.util.List;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.demo.dao.MatchInfoDao;
 import com.example.demo.dao.MatchMetaDao;
 import com.example.demo.dao.SummonerInfoDao;
 import com.example.demo.domain.Summoner;
 import com.example.demo.domain.Match;
 import com.example.demo.domain.Meta;
 import com.example.demo.domain.Player;
-import com.example.demo.dto.MatchDto;
+import com.example.demo.dto.MatchRespDto;
 import com.example.demo.dto.SummonerInfoRespDto;
+import com.example.demo.entity.MatchInfo;
+import com.example.demo.entity.MatchInfoId;
 import com.example.demo.entity.MatchMeta;
 import com.example.demo.entity.SummonerInfo;
 import com.example.demo.service.SummonerService;
@@ -41,6 +44,8 @@ public class SummonerServiceImpl implements SummonerService {
     private SummonerInfoDao summonerInfoDao;
     @Autowired
     private MatchMetaDao matchMetaDao;
+    @Autowired
+    private MatchInfoDao matchInfoDao;
 
     @Override
     public SummonerInfoRespDto getSummonerByName(String summonerName) {
@@ -81,37 +86,42 @@ public class SummonerServiceImpl implements SummonerService {
     }
 
     @Override
-    public List<MatchDto> getMathes(String accoutId, int index) throws IOException{
+    public List<MatchRespDto> getMathes(String accountId, int index) throws IOException{
 
-        JSONObject rawMatchLists = getAPI("https://euw1.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accoutId
+        JSONObject rawMatchLists = getAPI("https://euw1.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accountId
         + "?endIndex=" + 5 * index + "&beginIndex=" + (5 * index - 5));
 
-        List<MatchDto> matchList = new ArrayList<>();
+        List<MatchRespDto> matchList = new ArrayList<>();
         JSONArray matchesMeta = rawMatchLists.getJSONArray("matches");
 
         for (Object matchMeta : matchesMeta) {
             JSONObject matchMetaJSON = JSON.parseObject(matchMeta.toString());
-            System.out.println(matchMetaJSON);
-            Meta meta = new Meta(matchMetaJSON, accoutId);
-
+            //create meta
+            Meta meta = new Meta(matchMetaJSON, accountId);
+            //get info of a single match
+            JSONObject singleMatchInfo = getAPI("https://euw1.api.riotgames.com/lol/match/v4/matches/"+meta.getGameId());
+            meta.setWinTeam(winTeam(singleMatchInfo));
+            meta.setDuration(singleMatchInfo.getIntValue("gameDuration")/60+" mins");
+            //update table match_meta in database
             putMatchMeta(new MatchMeta(), meta);
 
-//            // build Match
-//            MatchDto matchDto = new MatchDto(meta);
-//            //info of a single match
-//            JSONObject raw = getAPI("https://euw1.api.riotgames.com/lol/match/v4/matches/"+meta.getGameId());
-//
-//            matchDto.setBluePlayers(getbluePlayers(raw)); // 100
-//            matchDto.setRedPlayers(getRedPlayers(raw)); // 200
-//            matchDto.getMeta().setDuration(raw.getIntValue("gameDuration")/60+" mins");
-//            matchDto.getMeta().setWinTeam(winTeam(raw));;
-//            matchList.add(matchDto);
+            // build Match
+            MatchRespDto matchRespDto = new MatchRespDto();
+            matchRespDto.setMeta(meta);
+
+            //get info of two teams' players
+            List<Player> bluePlayer = getBluePlayers(singleMatchInfo);
+            List<Player> redPlayer = getRedPlayers(singleMatchInfo);
+
+            matchRespDto.setBluePlayers(bluePlayer); // 100
+            matchRespDto.setRedPlayers(redPlayer); // 200
+
+            //update table match_info in database
+            putMatchInfo(new MatchInfo(), new MatchInfoId(), singleMatchInfo, bluePlayer, redPlayer);
+
+            matchList.add(matchRespDto);
         }
         return matchList;
-    }
-
-    private void scheduledTasks(){
-
     }
 
     private void putMatchMeta(MatchMeta matchMeta, Meta meta){
@@ -125,9 +135,41 @@ public class SummonerServiceImpl implements SummonerService {
         matchMetaDao.save(matchMeta);
     }
 
-    private String winTeam(JSONObject raw) {
+    private void putMatchInfo(MatchInfo matchInfo, MatchInfoId matchInfoId, JSONObject singleMatchInfo, List<Player> bluePlayer, List<Player> redPlayer){
+        for(Player p : bluePlayer){
+            matchInfoId.setMatchId(singleMatchInfo.getString("gameId"));
+            matchInfoId.setAccountId(p.getAccountId());
+            matchInfo.setId(matchInfoId);
+            matchInfo.setDmg(p.getDmg());
+            matchInfo.setChampion(p.getChampion());
+            matchInfo.setGold(p.getGold());
+            matchInfo.setKda(p.getKda());
+            matchInfo.setSummonerName(p.getSummonerName());
+            matchInfo.setTeam("blue");
+            matchInfoDao.save(matchInfo);
+        }
+        for(Player p : redPlayer){
+            matchInfoId.setMatchId(singleMatchInfo.getString("gameId"));
+            matchInfoId.setAccountId(p.getAccountId());
+            matchInfo.setId(matchInfoId);
+            matchInfo.setDmg(p.getDmg());
+            matchInfo.setChampion(p.getChampion());
+            matchInfo.setGold(p.getGold());
+            matchInfo.setKda(p.getKda());
+            matchInfo.setSummonerName(p.getSummonerName());
+            matchInfo.setTeam("red");
+            matchInfoDao.save(matchInfo);
+        }
+    }
+
+    //scheduled task
+    private void scheduledTasks(){
+
+    }
+
+    private String winTeam(JSONObject singleMatchInfo) {
         String result;
-        JSONObject blueTeamInfo =  (JSONObject)raw.getJSONArray("teams").get(0);
+        JSONObject blueTeamInfo =  (JSONObject)singleMatchInfo.getJSONArray("teams").get(0);
         String winContent = blueTeamInfo.getString("win");
         if (winContent.equals("Win")) {
             result = "Blue";
@@ -137,10 +179,10 @@ public class SummonerServiceImpl implements SummonerService {
         return result;
     }
 
-    private ArrayList<Player> getbluePlayers(JSONObject raw) {
-        ArrayList<Player> bluePlayers = new ArrayList<>();
-        JSONArray participantIdentities = raw.getJSONArray("participantIdentities");
-        JSONArray participants = raw.getJSONArray("participants");
+    private List<Player> getBluePlayers(JSONObject singleMatchInfo) {
+        List<Player> bluePlayers = new ArrayList<>();
+        JSONArray participantIdentities = singleMatchInfo.getJSONArray("participantIdentities");
+        JSONArray participants = singleMatchInfo.getJSONArray("participants");
         for (int i = 0; i <= 4; i++) {
             JSONObject identities = (JSONObject)participantIdentities.get(i);
             JSONObject data = (JSONObject)participants.get(i);
@@ -150,10 +192,10 @@ public class SummonerServiceImpl implements SummonerService {
         return bluePlayers;
     }
 
-    private ArrayList<Player> getRedPlayers(JSONObject raw) {
-        ArrayList<Player> redPlayers = new ArrayList<>();
-        JSONArray participantIdentities = raw.getJSONArray("participantIdentities");
-        JSONArray participants = raw.getJSONArray("participants");
+    private List<Player> getRedPlayers(JSONObject singleMatchInfo) {
+        List<Player> redPlayers = new ArrayList<>();
+        JSONArray participantIdentities = singleMatchInfo.getJSONArray("participantIdentities");
+        JSONArray participants = singleMatchInfo.getJSONArray("participants");
         for (int i = 5; i <= 9; i++) {
             JSONObject identities = (JSONObject)participantIdentities.get(i);
             JSONObject data = (JSONObject)participants.get(i);

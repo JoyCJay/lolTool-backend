@@ -43,7 +43,7 @@ public class ConsultController {
 	}
 
     @GetMapping(value = "/singleMatchChartsData/{match_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object getDamageChartJson(@PathVariable Long match_id) {
+    public Object getDamageChartJson(@PathVariable String match_id) {
 	    return chartService.getSingleMatchChartData(match_id);
     }
 

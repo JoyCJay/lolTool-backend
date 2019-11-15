@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class MatchDto {
+public class MatchRespDto {
     private Meta Meta;
     private List<Player> bluePlayers;
     private List<Player> redPlayers;

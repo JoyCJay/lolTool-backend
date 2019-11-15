@@ -4,7 +4,7 @@ import com.example.demo.dao.MatchInfoDao;
 import com.example.demo.domain.chartData.SingleMatchData;
 import com.example.demo.domain.Player;
 import com.example.demo.dto.SingleMatchChartDataDto;
-import com.example.demo.entity.Match;
+import com.example.demo.entity.MatchInfo;
 import com.example.demo.service.ChartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,14 +50,14 @@ public class ChartServiceImpl implements ChartService {
 //    }
 
     @Override
-    public SingleMatchChartDataDto getSingleMatchChartData(Long match_id) {
+    public SingleMatchChartDataDto getSingleMatchChartData(String match_id) {
 
-        List<Match> matchList = matchInfoDao.findMatchByMatchId(match_id);
+        List<MatchInfo> matchList = matchInfoDao.findMatchByMatchId(match_id);
 
         int kill = 0;
         int death = 0;
         int assist = 0;
-        for(Match m : matchList){
+        for(MatchInfo m : matchList){
             String kda = m.getKda();
             String[] arr = kda.split("/");
             kill = Integer.parseInt(arr[0]);
@@ -66,7 +66,7 @@ public class ChartServiceImpl implements ChartService {
         }
 
         List<SingleMatchData> blueTeam = new ArrayList<>();
-        for(Match m : matchList){
+        for(MatchInfo m : matchList){
             if(m.getTeam().equals("blue")){
                 blueTeam.add(new SingleMatchData(m.getSummonerName(), m.getDmg(), kill, death, assist, m.getGold()));
             }
@@ -78,7 +78,7 @@ public class ChartServiceImpl implements ChartService {
 //        blueTeam.add(new DamageData(22833, "Diane katy"));
 
         List<SingleMatchData> redTeam = new ArrayList<>();
-        for(Match m : matchList){
+        for(MatchInfo m : matchList){
             if(m.getTeam().equals("red")){
                 redTeam.add(new SingleMatchData(m.getSummonerName(), m.getDmg(), kill, death, assist, m.getGold()));
             }

@@ -3,18 +3,20 @@ package com.example.demo.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @Entity
 @Table(name = "match_info")
-public class Match {
-    @Id
-    @Column(name = "id", nullable = false)
-    private Long id;
-    @Column(name = "account_id", nullable = false)
-    private String accountId;
-    @Column(name = "match_id", nullable = false)
-    private Long matchId;
+public class MatchInfo implements Serializable {
+    private static final long serialVersionUID = 1L;
+//    @Id
+//    @Column(name = "account_id", nullable = false)
+//    private String accountId;
+//    @Column(name = "match_id", nullable = false)
+//    private String matchId;
+    @EmbeddedId
+    private MatchInfoId id;
     @Column(name = "summoner_name", nullable = false)
     private String summonerName;
     @Column(name = "team", nullable = false)
