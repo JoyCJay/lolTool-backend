@@ -11,4 +11,7 @@ public interface SummonerInfoDao extends JpaRepository<SummonerInfo, Long> {
     @Query("from SummonerInfo s where s.summonerName=?1")
     SummonerInfo findSummonerByName(String summonerName);
 
+    @Query("from SummonerInfo s where s.accountId=?1")
+    SummonerInfo findSummonerByAccountId(String accountId);
+
 }

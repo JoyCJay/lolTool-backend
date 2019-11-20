@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -19,4 +20,6 @@ public class SummonerInfo {
     @Column(name = "revision_date")
     private Date revisionDate;
 
+    @OneToMany(mappedBy = "summonerInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MatchMeta> matchMetaList;
 }

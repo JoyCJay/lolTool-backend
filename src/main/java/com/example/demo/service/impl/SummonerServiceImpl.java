@@ -77,6 +77,7 @@ public class SummonerServiceImpl implements SummonerService {
         return summonerInfoRespDto;
     }
 
+    //insert rawSummoner into table summonerInfo
     private void putSummonerInfo(SummonerInfo summonerInfo, JSONObject rawSummoner) {
         summonerInfo.setAccountId(rawSummoner.getString("accountId"));
         summonerInfo.setSummonerName(rawSummoner.getString("name"));
@@ -94,14 +95,19 @@ public class SummonerServiceImpl implements SummonerService {
         List<MatchRespDto> matchList = new ArrayList<>();
         JSONArray matchesMeta = rawMatchLists.getJSONArray("matches");
 
+        //create summonerInfo object by accountId
+        SummonerInfo summonerInfo = summonerInfoDao.findSummonerByAccountId(accountId);
+        System.out.println(summonerInfo.getAccountId());
+
         for (Object matchMeta : matchesMeta) {
             JSONObject matchMetaJSON = JSON.parseObject(matchMeta.toString());
             //create meta
-            Meta meta = new Meta(matchMetaJSON, accountId);
+            Meta meta = new Meta(matchMetaJSON, accountId, summonerInfo);
             //get info of a single match
             JSONObject singleMatchInfo = getAPI("https://euw1.api.riotgames.com/lol/match/v4/matches/"+meta.getGameId());
             meta.setWinTeam(winTeam(singleMatchInfo));
             meta.setDuration(singleMatchInfo.getIntValue("gameDuration")/60+" mins");
+
             //update table match_meta in database
             putMatchMeta(new MatchMeta(), meta);
 
@@ -131,7 +137,11 @@ public class SummonerServiceImpl implements SummonerService {
         matchMeta.setDuration(meta.getDuration());
         matchMeta.setWinTeam(meta.getWinTeam());
         matchMeta.setChampion(meta.getChampion());
-        matchMeta.setAccountId(meta.getAccountId());
+
+        //get SummonerInfo from meta
+        SummonerInfo summonerInfo = meta.getSummonerInfo();
+        summonerInfo.getMatchMetaList().add(matchMeta);
+        matchMeta.setSummonerInfo(summonerInfo);
         matchMetaDao.save(matchMeta);
     }
 
