@@ -9,3 +9,20 @@ Application web répartie et architecture pour les services web.
 - mvn clean
 - mvn install
 - mvn spring-boot:run
+
+## Build
+<!-- must run mvn install before  -->
+mvn install
+docker build --tag joycjay/lol-loupe:dev-back .
+
+## Run
+docker run -p 9090:9090 -t joycjay/lol-loupe:dev-back
+
+## Hint
+docker stop <CONTAINER ID>
+docker rm <CONTAINER ID>
+docker rmi <IMAGE ID>
+
+docker tag joycjay/lol-loupe joycjay/lol-loupe:v1
+docker rmi joycjay/lol-loupe:latest
+docker push joycjay/lol-loupe:v1
